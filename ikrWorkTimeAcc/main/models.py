@@ -1,25 +1,32 @@
 from django.db import models
 
-class Cameras(models.Model):
-    pass
+class Camera(models.Model):
+    url = models.CharField(max_length=600)
 
-class Slices(models.Model):
-    camera = models.ForeignKey(Cameras, on_delete=models.CASCADE)
+class Slice(models.Model):
+    shape = models.CharField(max_length=600)
+    camera = models.ForeignKey(Camera, on_delete=models.CASCADE)
 
-class Tags(models.Model):
-    cameras = models.ManyToManyField(Cameras)
-    slices = models.ManyToManyField(Slices)
+class Tag(models.Model):
+    name = models.CharField(max_length=150, blank=True)
+    cameras = models.ManyToManyField(Camera)
+    slices = models.ManyToManyField(Slice)
 
-class Events(models.Model):
-    tag = models.ForeignKey(Tags, on_delete=models.CASCADE)
+class Event(models.Model):
+    name = models.CharField(max_length=150, blank=True)
+    tag = models.ForeignKey(Tag, on_delete=models.CASCADE)
 
-class Statistics(models.Model):
-    pass
+class Statistic(models.Model):
+    timestamp = models.DateTimeField()
+    state = models.BooleanField()
 
-class Models(models.Model):
-    slices = models.ForeignKey(Slices, on_delete=models.CASCADE)
-    statistics = models.ManyToManyField(Statistics)
-    event = models.ForeignKey(Events, on_delete=models.CASCADE)
+class Model(models.Model):
+    slices = models.ForeignKey(Slice, on_delete=models.CASCADE)
+    statistics = models.ManyToManyField(Statistic)
+    event = models.ForeignKey(Event, on_delete=models.CASCADE)
 
-class Images(models.Model):
-    model = models.ForeignKey(Models, on_delete=models.CASCADE)
+class Image(models.Model):
+    path = models.CharField(max_length=500)
+    file_name = models.CharField(max_length=150)
+    active = models.BooleanField()
+    model = models.ForeignKey(Model, on_delete=models.CASCADE)
